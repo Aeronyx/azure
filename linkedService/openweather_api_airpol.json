@@ -1,0 +1,12 @@
+{
+	"name": "openweather_api_airpol",
+	"properties": {
+		"annotations": [],
+		"type": "RestService",
+		"typeProperties": {
+			"url": "https://openweathermap.org/api/air-pollution",
+			"enableServerCertificateValidation": true,
+			"authenticationType": "Anonymous"
+		}
+	}
+}
