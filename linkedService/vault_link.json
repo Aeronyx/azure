@@ -1,0 +1,10 @@
+{
+	"name": "vault_link",
+	"properties": {
+		"annotations": [],
+		"type": "AzureKeyVault",
+		"typeProperties": {
+			"baseUrl": "https://ds598-vault.vault.azure.net/"
+		}
+	}
+}
