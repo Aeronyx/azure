@@ -13,6 +13,7 @@
 					"secureOutput": false,
 					"secureInput": false
 				},
+				"userProperties": [],
 				"typeProperties": {
 					"method": "GET",
 					"url": "https://ds598-vault.vault.azure.net/secrets/openweather-api?api-version=7.0",
@@ -33,6 +34,7 @@
 						]
 					}
 				],
+				"userProperties": [],
 				"typeProperties": {
 					"items": {
 						"value": "@range(1, 52)",
