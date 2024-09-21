@@ -1,5 +1,5 @@
 {
-	"name": "hist-weather-ingest",
+	"name": "hist-airpol-ingest",
 	"properties": {
 		"activities": [
 			{
@@ -102,11 +102,6 @@
 				}
 			}
 		],
-		"variables": {
-			"api-key": {
-				"type": "String"
-			}
-		},
 		"annotations": []
 	}
 }
