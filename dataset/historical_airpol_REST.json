@@ -1,0 +1,29 @@
+{
+	"name": "historical_airpol_REST",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "openweather_api_airpol",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"lat": {
+				"type": "string"
+			},
+			"lon": {
+				"type": "string"
+			},
+			"appid": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "RestResource",
+		"typeProperties": {
+			"relativeUrl": {
+				"value": "/data/2.5/air_pollution?lat=@{dataset().lat}&lon=@{dataset().lon}&appid=@{dataset().appid}",
+				"type": "Expression"
+			}
+		},
+		"schema": []
+	}
+}

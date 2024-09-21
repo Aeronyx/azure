@@ -79,21 +79,18 @@
 							},
 							"inputs": [
 								{
-									"referenceName": "historical_api_REST",
+									"referenceName": "historical_airpol_REST",
 									"type": "DatasetReference",
 									"parameters": {
 										"lat": "42.3601",
 										"lon": "-71.0589",
-										"appid": {
-											"value": "@activity('get-weather-key').output",
-											"type": "Expression"
-										}
+										"appid": "@activity('get-weather-key').output"
 									}
 								}
 							],
 							"outputs": [
 								{
-									"referenceName": "HIST_WEATHER_JSON",
+									"referenceName": "BRONZE_INGEST_JSON",
 									"type": "DatasetReference"
 								}
 							]

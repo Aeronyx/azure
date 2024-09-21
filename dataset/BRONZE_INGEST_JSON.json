@@ -1,5 +1,5 @@
 {
-	"name": "HIST_WEATHER_JSON",
+	"name": "BRONZE_INGEST_JSON",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "datalake_link",
