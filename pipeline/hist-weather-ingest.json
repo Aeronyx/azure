@@ -33,6 +33,7 @@
 						]
 					}
 				],
+				"userProperties": [],
 				"typeProperties": {
 					"items": {
 						"value": "@range(1, 53)",
@@ -83,11 +84,7 @@
 									"type": "DatasetReference",
 									"parameters": {
 										"lat": "42.3601",
-										"lon": "-71.0589",
-										"appid": {
-											"value": "@activity('get-weather-key').output",
-											"type": "Expression"
-										}
+										"lon": "-71.0589"
 									}
 								}
 							],
