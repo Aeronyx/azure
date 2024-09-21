@@ -139,7 +139,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/BRONZE_INGEST_JSON')]",
+			"name": "[concat(parameters('factoryName'), '/BRONZE_WEATHER_JSON')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -152,7 +152,7 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobFSLocation",
-						"folderPath": "bronze-weather",
+						"folderPath": "bronze-weather/weekly-historical-weather",
 						"fileSystem": "bucket1"
 					}
 				},
@@ -197,6 +197,30 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/BRONZE_AIRPOL_INGEST')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "datalake_link",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "bronze-weather/weekly-historical-airpol",
+						"fileSystem": "bucket1"
+					}
+				},
+				"schema": {}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/datalake_link')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/hist-weather-ingest')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -238,7 +262,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"items": {
-								"value": "@range(1, 53)",
+								"value": "@range(1, 52)",
 								"type": "Expression"
 							},
 							"isSequential": true,
@@ -269,10 +293,7 @@
 											"type": "JsonSink",
 											"storeSettings": {
 												"type": "AzureBlobFSWriteSettings",
-												"copyBehavior": {
-													"value": "/weekly-historical-weather/week-@{item()}-weather.json",
-													"type": "Expression"
-												}
+												"copyBehavior": "FlattenHierarchy"
 											},
 											"formatSettings": {
 												"type": "JsonWriteSettings"
@@ -305,7 +326,7 @@
 									],
 									"outputs": [
 										{
-											"referenceName": "BRONZE_INGEST_JSON",
+											"referenceName": "BRONZE_WEATHER_JSON",
 											"type": "DatasetReference",
 											"parameters": {}
 										}
@@ -322,7 +343,7 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/historical_api_REST')]",
-				"[concat(variables('factoryId'), '/datasets/BRONZE_INGEST_JSON')]"
+				"[concat(variables('factoryId'), '/datasets/BRONZE_WEATHER_JSON')]"
 			]
 		},
 		{
@@ -339,7 +360,7 @@
 							"timeout": "0.12:00:00",
 							"retry": 0,
 							"retryIntervalInSeconds": 30,
-							"secureOutput": true,
+							"secureOutput": false,
 							"secureInput": false
 						},
 						"userProperties": [
@@ -348,7 +369,7 @@
 						"typeProperties": {
 							"method": "GET",
 							"headers": {},
-							"url": "https://ds598-vault.vault.azure.net/secrets/openweather-api/6fb980c4f4ea4518aaf006538274a8e6?api-version=7.0",
+							"url": "https://ds598-vault.vault.azure.net/secrets/openweather-api?api-version=7.0",
 							"authentication": {
 								"type": "MSI",
 								"resource": "https://vault.azure.net"
@@ -371,7 +392,7 @@
 						],
 						"typeProperties": {
 							"items": {
-								"value": "@range(1, 53)",
+								"value": "@range(1, 52)",
 								"type": "Expression"
 							},
 							"isSequential": true,
@@ -402,10 +423,7 @@
 											"type": "JsonSink",
 											"storeSettings": {
 												"type": "AzureBlobFSWriteSettings",
-												"copyBehavior": {
-													"value": "/weekly-historical-airpol/week-@{item()}-airpol.json",
-													"type": "Expression"
-												}
+												"copyBehavior": "FlattenHierarchy"
 											},
 											"formatSettings": {
 												"type": "JsonWriteSettings"
@@ -420,13 +438,16 @@
 											"parameters": {
 												"lat": "42.3601",
 												"lon": "-71.0589",
-												"appid": "@activity('get-weather-key').output"
+												"appid": {
+													"value": "@activity('get-weather-key').output.value",
+													"type": "Expression"
+												}
 											}
 										}
 									],
 									"outputs": [
 										{
-											"referenceName": "BRONZE_INGEST_JSON",
+											"referenceName": "BRONZE_AIRPOL_INGEST",
 											"type": "DatasetReference",
 											"parameters": {}
 										}
@@ -443,7 +464,7 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/historical_airpol_REST')]",
-				"[concat(variables('factoryId'), '/datasets/BRONZE_INGEST_JSON')]"
+				"[concat(variables('factoryId'), '/datasets/BRONZE_AIRPOL_INGEST')]"
 			]
 		}
 	]
