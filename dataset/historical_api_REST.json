@@ -1,0 +1,12 @@
+{
+	"name": "historical_api_REST",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "openweather_api_link",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "RestResource",
+		"schema": []
+	}
+}
