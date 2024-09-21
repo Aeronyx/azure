@@ -8,14 +8,14 @@
 		"datalake_link_accountKey": {
 			"value": ""
 		},
-		"openweather_api_link_properties_typeProperties_url": {
-			"value": "https://history.openweathermap.org/"
+		"datalake_link_properties_typeProperties_url": {
+			"value": "https://gtramstorageadmin.dfs.core.windows.net/"
 		},
 		"openweather_api_airpol_properties_typeProperties_url": {
 			"value": "http://api.openweathermap.org"
 		},
-		"datalake_link_properties_typeProperties_url": {
-			"value": "https://gtramstorageadmin.dfs.core.windows.net/"
+		"openweather_api_link_properties_typeProperties_url": {
+			"value": "https://history.openweathermap.org/"
 		},
 		"vault_link_properties_typeProperties_baseUrl": {
 			"value": "https://ds598-vault.vault.azure.net/"

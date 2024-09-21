@@ -11,17 +11,17 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'accountKey' of 'datalake_link'"
 		},
-		"openweather_api_link_properties_typeProperties_url": {
+		"datalake_link_properties_typeProperties_url": {
 			"type": "string",
-			"defaultValue": "https://history.openweathermap.org/"
+			"defaultValue": "https://gtramstorageadmin.dfs.core.windows.net/"
 		},
 		"openweather_api_airpol_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "http://api.openweathermap.org"
 		},
-		"datalake_link_properties_typeProperties_url": {
+		"openweather_api_link_properties_typeProperties_url": {
 			"type": "string",
-			"defaultValue": "https://gtramstorageadmin.dfs.core.windows.net/"
+			"defaultValue": "https://history.openweathermap.org/"
 		},
 		"vault_link_properties_typeProperties_baseUrl": {
 			"type": "string",
@@ -33,16 +33,18 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/openweather_api_link')]",
+			"name": "[concat(parameters('factoryName'), '/datalake_link')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"annotations": [],
-				"type": "RestService",
+				"type": "AzureBlobFS",
 				"typeProperties": {
-					"url": "[parameters('openweather_api_link_properties_typeProperties_url')]",
-					"enableServerCertificateValidation": true,
-					"authenticationType": "Anonymous"
+					"url": "[parameters('datalake_link_properties_typeProperties_url')]",
+					"accountKey": {
+						"type": "SecureString",
+						"value": "[parameters('datalake_link_accountKey')]"
+					}
 				}
 			},
 			"dependsOn": []
@@ -63,18 +65,16 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/datalake_link')]",
+			"name": "[concat(parameters('factoryName'), '/openweather_api_link')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"annotations": [],
-				"type": "AzureBlobFS",
+				"type": "RestService",
 				"typeProperties": {
-					"url": "[parameters('datalake_link_properties_typeProperties_url')]",
-					"accountKey": {
-						"type": "SecureString",
-						"value": "[parameters('datalake_link_accountKey')]"
-					}
+					"url": "[parameters('openweather_api_link_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": true,
+					"authenticationType": "Anonymous"
 				}
 			},
 			"dependsOn": []
@@ -93,49 +93,27 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/historical_api_REST')]",
+			"name": "[concat(parameters('factoryName'), '/BRONZE_AIRPOL_INGEST')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"linkedServiceName": {
-					"referenceName": "openweather_api_link",
+					"referenceName": "datalake_link",
 					"type": "LinkedServiceReference"
 				},
-				"parameters": {
-					"lat": {
-						"type": "string",
-						"defaultValue": "42.3601"
-					},
-					"lon": {
-						"type": "string",
-						"defaultValue": "-71.0589"
-					},
-					"appid": {
-						"type": "string"
-					},
-					"dataType": {
-						"type": "string",
-						"defaultValue": "hour"
-					},
-					"start": {
-						"type": "string"
-					},
-					"end": {
-						"type": "string"
-					}
-				},
 				"annotations": [],
-				"type": "RestResource",
+				"type": "Json",
 				"typeProperties": {
-					"relativeUrl": {
-						"value": "data/2.5/history/city?lat=@{dataset().lat}&lon=@{dataset().lon}&type=@{dataset().dataType}&start=@{dataset().start}&end=@{dataset().end}&appid=@{dataset().appid}",
-						"type": "Expression"
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "bronze-weather/weekly-historical-airpol",
+						"fileSystem": "bucket1"
 					}
 				},
-				"schema": []
+				"schema": {}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/openweather_api_link')]"
+				"[concat(variables('factoryId'), '/linkedServices/datalake_link')]"
 			]
 		},
 		{
@@ -197,27 +175,166 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/BRONZE_AIRPOL_INGEST')]",
+			"name": "[concat(parameters('factoryName'), '/historical_api_REST')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"linkedServiceName": {
-					"referenceName": "datalake_link",
+					"referenceName": "openweather_api_link",
 					"type": "LinkedServiceReference"
 				},
-				"annotations": [],
-				"type": "Json",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"folderPath": "bronze-weather/weekly-historical-airpol",
-						"fileSystem": "bucket1"
+				"parameters": {
+					"lat": {
+						"type": "string",
+						"defaultValue": "42.3601"
+					},
+					"lon": {
+						"type": "string",
+						"defaultValue": "-71.0589"
+					},
+					"appid": {
+						"type": "string"
+					},
+					"dataType": {
+						"type": "string",
+						"defaultValue": "hour"
+					},
+					"start": {
+						"type": "string"
+					},
+					"end": {
+						"type": "string"
 					}
 				},
-				"schema": {}
+				"annotations": [],
+				"type": "RestResource",
+				"typeProperties": {
+					"relativeUrl": {
+						"value": "data/2.5/history/city?lat=@{dataset().lat}&lon=@{dataset().lon}&type=@{dataset().dataType}&start=@{dataset().start}&end=@{dataset().end}&appid=@{dataset().appid}",
+						"type": "Expression"
+					}
+				},
+				"schema": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/datalake_link')]"
+				"[concat(variables('factoryId'), '/linkedServices/openweather_api_link')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/hist-airpol-ingest')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "get-weather-key",
+						"type": "WebActivity",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"method": "GET",
+							"headers": {},
+							"url": "https://ds598-vault.vault.azure.net/secrets/openweather-api?api-version=7.0",
+							"authentication": {
+								"type": "MSI",
+								"resource": "https://vault.azure.net"
+							}
+						}
+					},
+					{
+						"name": "ForEachWeek",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "get-weather-key",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@range(1, 52)",
+								"type": "Expression"
+							},
+							"isSequential": true,
+							"activities": [
+								{
+									"name": "Copy Historical Weekly",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "RestSource",
+											"httpRequestTimeout": "00:01:40",
+											"requestInterval": "00.00:00:00.010",
+											"requestMethod": "GET",
+											"paginationRules": {
+												"supportRFC5988": "true"
+											}
+										},
+										"sink": {
+											"type": "JsonSink",
+											"storeSettings": {
+												"type": "AzureBlobFSWriteSettings",
+												"copyBehavior": "FlattenHierarchy"
+											},
+											"formatSettings": {
+												"type": "JsonWriteSettings"
+											}
+										},
+										"enableStaging": false
+									},
+									"inputs": [
+										{
+											"referenceName": "historical_airpol_REST",
+											"type": "DatasetReference",
+											"parameters": {
+												"lat": "42.3601",
+												"lon": "-71.0589",
+												"appid": {
+													"value": "@activity('get-weather-key').output.value",
+													"type": "Expression"
+												}
+											}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "BRONZE_AIRPOL_INGEST",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									]
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/historical_airpol_REST')]",
+				"[concat(variables('factoryId'), '/datasets/BRONZE_AIRPOL_INGEST')]"
 			]
 		},
 		{
@@ -344,127 +461,6 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/historical_api_REST')]",
 				"[concat(variables('factoryId'), '/datasets/BRONZE_WEATHER_JSON')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/hist-airpol-ingest')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "get-weather-key",
-						"type": "WebActivity",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [
-							{}
-						],
-						"typeProperties": {
-							"method": "GET",
-							"headers": {},
-							"url": "https://ds598-vault.vault.azure.net/secrets/openweather-api?api-version=7.0",
-							"authentication": {
-								"type": "MSI",
-								"resource": "https://vault.azure.net"
-							}
-						}
-					},
-					{
-						"name": "ForEachWeek",
-						"type": "ForEach",
-						"dependsOn": [
-							{
-								"activity": "get-weather-key",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [
-							{}
-						],
-						"typeProperties": {
-							"items": {
-								"value": "@range(1, 52)",
-								"type": "Expression"
-							},
-							"isSequential": true,
-							"activities": [
-								{
-									"name": "Copy Historical Weekly",
-									"type": "Copy",
-									"dependsOn": [],
-									"policy": {
-										"timeout": "0.12:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"source": {
-											"type": "RestSource",
-											"httpRequestTimeout": "00:01:40",
-											"requestInterval": "00.00:00:00.010",
-											"requestMethod": "GET",
-											"paginationRules": {
-												"supportRFC5988": "true"
-											}
-										},
-										"sink": {
-											"type": "JsonSink",
-											"storeSettings": {
-												"type": "AzureBlobFSWriteSettings",
-												"copyBehavior": "FlattenHierarchy"
-											},
-											"formatSettings": {
-												"type": "JsonWriteSettings"
-											}
-										},
-										"enableStaging": false
-									},
-									"inputs": [
-										{
-											"referenceName": "historical_airpol_REST",
-											"type": "DatasetReference",
-											"parameters": {
-												"lat": "42.3601",
-												"lon": "-71.0589",
-												"appid": {
-													"value": "@activity('get-weather-key').output.value",
-													"type": "Expression"
-												}
-											}
-										}
-									],
-									"outputs": [
-										{
-											"referenceName": "BRONZE_AIRPOL_INGEST",
-											"type": "DatasetReference",
-											"parameters": {}
-										}
-									]
-								}
-							]
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/historical_airpol_REST')]",
-				"[concat(variables('factoryId'), '/datasets/BRONZE_AIRPOL_INGEST')]"
 			]
 		}
 	]

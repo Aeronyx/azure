@@ -11,17 +11,17 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'accountKey' of 'datalake_link'"
 		},
-		"openweather_api_link_properties_typeProperties_url": {
+		"datalake_link_properties_typeProperties_url": {
 			"type": "string",
-			"defaultValue": "https://history.openweathermap.org/"
+			"defaultValue": "https://gtramstorageadmin.dfs.core.windows.net/"
 		},
 		"openweather_api_airpol_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "http://api.openweathermap.org"
 		},
-		"datalake_link_properties_typeProperties_url": {
+		"openweather_api_link_properties_typeProperties_url": {
 			"type": "string",
-			"defaultValue": "https://gtramstorageadmin.dfs.core.windows.net/"
+			"defaultValue": "https://history.openweathermap.org/"
 		},
 		"vault_link_properties_typeProperties_baseUrl": {
 			"type": "string",
@@ -57,14 +57,14 @@
 					"datalake_link_accountKey": {
 						"value": "[parameters('datalake_link_accountKey')]"
 					},
-					"openweather_api_link_properties_typeProperties_url": {
-						"value": "[parameters('openweather_api_link_properties_typeProperties_url')]"
+					"datalake_link_properties_typeProperties_url": {
+						"value": "[parameters('datalake_link_properties_typeProperties_url')]"
 					},
 					"openweather_api_airpol_properties_typeProperties_url": {
 						"value": "[parameters('openweather_api_airpol_properties_typeProperties_url')]"
 					},
-					"datalake_link_properties_typeProperties_url": {
-						"value": "[parameters('datalake_link_properties_typeProperties_url')]"
+					"openweather_api_link_properties_typeProperties_url": {
+						"value": "[parameters('openweather_api_link_properties_typeProperties_url')]"
 					},
 					"vault_link_properties_typeProperties_baseUrl": {
 						"value": "[parameters('vault_link_properties_typeProperties_baseUrl')]"
