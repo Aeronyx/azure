@@ -1,0 +1,19 @@
+{
+	"name": "HIST_WEATHER_JSON",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "datalake_link",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "bronze-weather",
+				"fileSystem": "bucket1"
+			}
+		},
+		"schema": {}
+	}
+}
