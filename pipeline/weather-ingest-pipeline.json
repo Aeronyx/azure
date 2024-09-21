@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "HistoricalWeatherIngest",
+				"name": "get-weather-key",
 				"type": "WebActivity",
 				"dependsOn": [],
 				"policy": {
@@ -13,7 +13,6 @@
 					"secureOutput": true,
 					"secureInput": false
 				},
-				"userProperties": [],
 				"typeProperties": {
 					"method": "GET",
 					"url": "https://ds598-vault.vault.azure.net/secrets/openweather-api/6fb980c4f4ea4518aaf006538274a8e6?api-version=7.0",
@@ -28,14 +27,18 @@
 				"type": "ForEach",
 				"dependsOn": [
 					{
-						"activity": "HistoricalWeatherIngest",
+						"activity": "set api-key",
 						"dependencyConditions": [
 							"Succeeded"
 						]
 					}
 				],
-				"userProperties": [],
 				"typeProperties": {
+					"items": {
+						"value": "@range(1, 53)",
+						"type": "Expression"
+					},
+					"isSequential": true,
 					"activities": [
 						{
 							"name": "Copy Historical Weekly",
@@ -59,19 +62,82 @@
 										"supportRFC5988": "true"
 									}
 								},
+								"sink": {
+									"type": "JsonSink",
+									"storeSettings": {
+										"type": "AzureBlobFSWriteSettings",
+										"copyBehavior": {
+											"value": "@item()",
+											"type": "Expression"
+										}
+									},
+									"formatSettings": {
+										"type": "JsonWriteSettings"
+									}
+								},
 								"enableStaging": false
 							},
 							"inputs": [
 								{
 									"referenceName": "historical_api_REST",
+									"type": "DatasetReference",
+									"parameters": {
+										"lat": "42.3601",
+										"lon": "-71.0589",
+										"dataType": "hour",
+										"start": {
+											"value": "@div(sub(ticks(addDays(utcNow(), mul(-7, item()))), ticks('1970-01-01T00:00:00Z')), 10000000)\n",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "HIST_WEATHER_JSON",
 									"type": "DatasetReference"
 								}
 							]
 						}
 					]
 				}
+			},
+			{
+				"name": "set api-key",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "get-weather-key",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": true
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "api-key",
+					"value": "@activity('get-weather-key').output.value"
+				}
 			}
 		],
+		"parameters": {
+			"start": {
+				"type": "String",
+				"defaultValue": "@div(sub(ticks(addDays(utcNow(), -7 * item())), ticks('1970-01-01T00:00:00Z')), 10000000)"
+			},
+			"api_key": {
+				"type": "String"
+			}
+		},
+		"variables": {
+			"api-key": {
+				"type": "String"
+			}
+		},
 		"annotations": []
 	}
 }

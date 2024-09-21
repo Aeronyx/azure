@@ -23,6 +23,9 @@
 			},
 			"end": {
 				"type": "string"
+			},
+			"appid": {
+				"type": "string"
 			}
 		},
 		"annotations": [],
