@@ -67,7 +67,7 @@
 									"storeSettings": {
 										"type": "AzureBlobFSWriteSettings",
 										"copyBehavior": {
-											"value": "week-@{item()}-data.json",
+											"value": "/weekly-historical-weather/week-@{item()}-weather.json",
 											"type": "Expression"
 										}
 									},
