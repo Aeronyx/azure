@@ -1,5 +1,5 @@
 {
-	"name": "BRONZE_WEATHER_JSON",
+	"name": "BRONZE_AIRPOL_INGEST",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "datalake_link",
@@ -10,7 +10,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
-				"folderPath": "bronze-weather/weekly-historical-weather",
+				"folderPath": "bronze-weather/weekly-historical-airpol",
 				"fileSystem": "bucket1"
 			}
 		},

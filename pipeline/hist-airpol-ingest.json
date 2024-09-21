@@ -66,10 +66,7 @@
 									"type": "JsonSink",
 									"storeSettings": {
 										"type": "AzureBlobFSWriteSettings",
-										"copyBehavior": {
-											"value": "/weekly-historical-airpol/week-@{item()}-airpol.json",
-											"type": "Expression"
-										}
+										"copyBehavior": "FlattenHierarchy"
 									},
 									"formatSettings": {
 										"type": "JsonWriteSettings"
@@ -93,7 +90,7 @@
 							],
 							"outputs": [
 								{
-									"referenceName": "BRONZE_INGEST_JSON",
+									"referenceName": "BRONZE_AIRPOL_INGEST",
 									"type": "DatasetReference"
 								}
 							]
