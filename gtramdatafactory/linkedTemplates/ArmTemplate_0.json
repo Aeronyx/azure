@@ -213,9 +213,7 @@
 							"secureOutput": true,
 							"secureInput": false
 						},
-						"userProperties": [
-							{}
-						],
+						"userProperties": [],
 						"typeProperties": {
 							"method": "GET",
 							"headers": {},
